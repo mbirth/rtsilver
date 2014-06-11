@@ -3,7 +3,7 @@ RT Silver
 
 This is a Chrome extension which enables a few Gold features on a well-known sports tracking site.
 
-This is done solely by messing around with their DOM. No illegal things are done.
+This is done solely by messing around with their DOM and JavaScript variables. No illegal things are done.
 
 
 Compilation
