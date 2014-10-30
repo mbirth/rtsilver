@@ -1,5 +1,9 @@
 console.log 'RT Silver'
 
+cleanElement = (e) -> 
+    elem = document.getElementById e
+    elem?.innerHTML = ''
+
 root = document.getElementsByTagName 'html'
 root[0].className = 'gold'
 
@@ -29,7 +33,7 @@ Godmode.text = '''
     Godmode();
     console.log(\'Inject complete.\');
     '''
-head[0].appendChild(Godmode)
+head[0]?.appendChild(Godmode)
 
 # Need to find a way to modify this before Chrome parses the code
 #scripts = document.getElementsByTagName 'script'
@@ -72,10 +76,40 @@ document.enableCheering = ->
         console.log 'Modified %o to %o', currentClasses, newClasses
         currentNode.className = newClasses
 
+setTimeout('document.enableCheering();', 3000);
+
 # enable features: colored traces - remove gold ad
 adnode = document.getElementById 'colored_traces_ad'
 if adnode?
     adnode.parentNode.removeChild adnode.nextElementSibling
     adnode.parentNode.removeChild adnode
 
-setTimeout('document.enableCheering();', 3000);
+# enable features: compare trainings
+cmp_div = document.getElementsByClassName 'mode off'
+cmp_div[0]?.className = 'mode on'
+nav_tabs = document.getElementsByClassName 'tabs_navigation'
+if nav_tabs.length > 0
+    nav_tabs[0].children[1].className = 'tab_me'
+    nav_tabs[0].children[1].innerHTML = nav_tabs[0].children[1].children[0].innerHTML
+    nav_tabs[0].children[2].className = 'tab_friends last'
+    nav_tabs[0].children[2].innerHTML = nav_tabs[0].children[2].children[0].innerHTML
+
+
+# reload javascript
+document.reloadJS = ->
+    scripts = document.getElementsByTagName 'script'
+    for s in scripts
+        if s.src.indexOf('statistics_history') isnt -1
+            console.log 'Found script: %o', s
+            head = document.getElementsByTagName 'head'
+            newScript = document.createElement 'script'
+            newScript.type = 'text/javascript'
+            newScript.src  = s.src
+            s.parentNode.removeChild s
+            cleanElement 'chart_1_js'
+            cleanElement 'chart_1_js_legend'
+            cleanElement 'chart_1_js_control'
+            head[0].appendChild newScript
+            break
+
+#setTimeout('document.reloadJS();', 3000);
