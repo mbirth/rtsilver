@@ -1,12 +1,12 @@
 {
     "name": "RT Silver",
-    "version": "2014.10.29",
+    "version": "2014.10.31",
     "manifest_version": 2,
     "description": "Enables a few Gold features on Runtastic",
     "homepage_url": "https://github.com/mbirth/rtsilver",
     "background": {
         "scripts": [ "background.js" ],
-        "persistent": false
+        "persistent": true
     },
     "page_action": {
         "default_title": "RT Silver",
@@ -18,13 +18,20 @@
     },
     "permissions": [
         "declarativeContent",
-        "tabs", "https://www.runtastic.com/*"
+        "webRequest",
+        "webRequestBlocking",
+        "tabs", "*://www.runtastic.com/", "*://*.cloudfront.net/"
     ],
     "content_scripts": [
         {
           "matches": ["https://www.runtastic.com/*"],
           "js": ["content.js"],
           "run_at": "document_idle"
+        },
+        {
+          "matches": ["https://www.runtastic.com/*"],
+          "js": ["prepare.js"],
+          "run_at": "document_start"
         }
     ],
     "icons": {

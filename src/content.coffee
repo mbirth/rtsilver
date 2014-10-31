@@ -1,6 +1,9 @@
-console.log 'RT Silver'
+# RT Silver
+# @author Markus Birth <markus@birth-online.de>
 
-cleanElement = (e) -> 
+console.log 'RT Silver Main'
+
+cleanElement = (e) ->
     elem = document.getElementById e
     elem?.innerHTML = ''
 
@@ -18,8 +21,8 @@ Godmode.text = '''
             console.log(\'Found user: %o\', user);
             user.is_gold_user = true;
             user.is_beta_tester = true;
-            user.status = \'gold\';
-            user.user_type = \'gold\';
+            user.status = \'gold.paid\';
+            user.user_type = \'gold.paid\';
         } else {
             if (god_attempts < 100) {
                 console.log(\'Retrying...\');
@@ -94,22 +97,31 @@ if nav_tabs.length > 0
     nav_tabs[0].children[2].className = 'tab_friends last'
     nav_tabs[0].children[2].innerHTML = nav_tabs[0].children[2].children[0].innerHTML
 
+# query script to inject and inject it
+chrome.extension.sendMessage {method: "get_script_src"}, (response) ->
+    if response isnt ""
+        console.log 'Document src to load: %o', response
+        head = document.getElementsByTagName 'head'
 
-# reload javascript
-document.reloadJS = ->
-    scripts = document.getElementsByTagName 'script'
-    for s in scripts
-        if s.src.indexOf('statistics_history') isnt -1
-            console.log 'Found script: %o', s
-            head = document.getElementsByTagName 'head'
-            newScript = document.createElement 'script'
-            newScript.type = 'text/javascript'
-            newScript.src  = s.src
-            s.parentNode.removeChild s
-            cleanElement 'chart_1_js'
-            cleanElement 'chart_1_js_legend'
-            cleanElement 'chart_1_js_control'
-            head[0].appendChild newScript
-            break
+        newScript = document.createElement 'script'
+        newScript.type = 'text/javascript'
+        newScript.innerText = '
+            window.chart_1_configuration.period_end = (new Date).start().getTime();
+            window.chart_1_backup = window.chart_1_configuration;
+            console.log("Backup: %o", window.chart_1_backup);
 
-#setTimeout('document.reloadJS();', 3000);
+            var head = document.getElementsByTagName("head")[0];
+            newScript = document.createElement("script");
+            newScript.type = "text/javascript";
+            newScript.src  = "' + response + '?blafasel";
+            newScript.onload = function() {
+                console.log("Script loaded! Backup CFG: %o", window.chart_1_backup);
+                window.chart_1_configuration = window.chart_1_backup;
+                console.log("Chart 1 CFG: %o", window.chart_1_configuration);
+            };
+            head.appendChild(newScript);
+        '
+        head[0].appendChild newScript
+        console.log 'Script appended.'
+    else
+        console.log 'Got no script to load.'
